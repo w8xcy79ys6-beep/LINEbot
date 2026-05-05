@@ -172,9 +172,9 @@ else if (userText.startsWith("/weather")) {
 
 if (city.includes("大阪") || city.includes("osaka")) city = "Osaka";
 if (city.includes("東京") || city.includes("tokyo")) city = "Tokyo";
-  city = city.toLowerCase();
+  
 
-if (city.includes("熊本") || city.includes("kumamoto")) city = "kumamoto";
+if (city.includes("熊本") || city.includes("kumamoto")) city = "Kumamoto";
   if (!city) {
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
@@ -232,7 +232,7 @@ if (city.includes("熊本") || city.includes("kumamoto")) city = "kumamoto";
         replyToken,
         messages: [{
           type: "text",
-          text: "都市が見つからないか、エラー😢"
+          text: "対応してない都市かも😢\n大阪・東京・熊本で試して！"
         }]
       },
       {
