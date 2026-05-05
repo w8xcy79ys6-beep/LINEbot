@@ -432,9 +432,41 @@ else if (isShiritori) {
     const nextChar = word.slice(-1);
 
     const candidates = words.filter(w => w.startsWith(nextChar));
+if (candidates.length === 0) {
+  isShiritori = false;
 
-    const botWord = candidates[Math.floor(Math.random() * candidates.length)];
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage("思いつかなかった…あなたの勝ち！🎉")]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+  return;
+}
+const botWord = candidates[Math.floor(Math.random() * candidates.length)];
+lastWord = botWord;
 
+await axios.post(
+  "https://api.line.me/v2/bot/message/reply",
+  {
+    replyToken,
+    messages: [createQuickReplyMessage(`🤖 ${botWord}`)]
+  },
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+    }
+  }
+);
+return;
     lastWord = botWord;
 
     await axios.post(
