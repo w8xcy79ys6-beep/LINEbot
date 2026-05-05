@@ -389,7 +389,22 @@ else if (userText.trim() === "/shiritori") {
 else if (isShiritori) {
 
   const word = toHiragana(userText.trim()).replace(/[^ぁ-ん]/g, '');
-
+　  if (!word) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("ひらがなで入力して！")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
   // んで終了
   if (word.endsWith("ん")) {
     isShiritori = false;
