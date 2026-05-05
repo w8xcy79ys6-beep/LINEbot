@@ -53,32 +53,31 @@ if (userText.trim() === "/help") {
 }
  else if (userText.trim() === "/news") {
 
-  const apiKey = process.env.NEWS_API_KEY;
-
   try {
-    // 🌍 世界ニュース
     const worldRes = await axios.get(
-      `https://newsapi.org/v2/top-headlines?language=ja&pageSize=1&apiKey=${apiKey}`
+      "https://news.yahoo.co.jp/rss/topics/world.xml"
     );
 
-    // 🇯🇵 日本ニュース
     const jpRes = await axios.get(
-  `https://newsapi.org/v2/top-headlines?sources=nhk-news&pageSize=1&apiKey=${apiKey}`
-);
+      "https://news.yahoo.co.jp/rss/topics/domestic.xml"
+    );
 
-    const world = worldRes.data.articles?.[0];
-    const japan = jpRes.data.articles?.[0];
+    const worldTitle = worldRes.data.match(/<title>(.*?)<\/title>/)[2];
+    const worldLink = worldRes.data.match(/<link>(.*?)<\/link>/)[2];
+
+    const jpTitle = jpRes.data.match(/<title>(.*?)<\/title>/)[2];
+    const jpLink = jpRes.data.match(/<link>(.*?)<\/link>/)[2];
 
     const text =
 `【今日のニュース📰】
 
 🌍 世界
-${world?.title || "取得失敗"}
-${world?.url || ""}
+${worldTitle}
+${worldLink}
 
 🇯🇵 日本
-${japan?.title || "取得失敗"}
-${japan?.url || ""}
+${jpTitle}
+${jpLink}
 `;
 
     await axios.post(
