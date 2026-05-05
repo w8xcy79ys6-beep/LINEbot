@@ -46,7 +46,7 @@ if (userText.trim() === "/help") {
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
   );
@@ -62,11 +62,17 @@ if (userText.trim() === "/help") {
       "https://news.yahoo.co.jp/rss/topics/domestic.xml"
     );
 
-    const worldTitle = worldRes.data.match(/<title>(.*?)<\/title>/)[2];
-    const worldLink = worldRes.data.match(/<link>(.*?)<\/link>/)[2];
+    const worldTitles = worldRes.data.match(/<title>(.*?)<\/title>/g);
+const worldLinks = worldRes.data.match(/<link>(.*?)<\/link>/g);
 
-    const jpTitle = jpRes.data.match(/<title>(.*?)<\/title>/)[2];
-    const jpLink = jpRes.data.match(/<link>(.*?)<\/link>/)[2];
+const jpTitles = jpRes.data.match(/<title>(.*?)<\/title>/g);
+const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
+
+const worldTitle = worldTitles?.[1]?.replace(/<\/?title>/g, "") || "取得失敗";
+const worldLink = worldLinks?.[1]?.replace(/<\/?link>/g, "") || "";
+
+const jpTitle = jpTitles?.[1]?.replace(/<\/?title>/g, "") || "取得失敗";
+const jpLink = jpLinks?.[1]?.replace(/<\/?link>/g, "") || "";
 
     const text =
 `【今日のニュース📰】
