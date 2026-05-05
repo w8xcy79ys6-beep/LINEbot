@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 
 const app = express();
+app.use(express.json());
+
 function toHiragana(text) {
   return text.replace(/[ァ-ン]/g, ch =>
     String.fromCharCode(ch.charCodeAt(0) - 0x60)
@@ -19,7 +21,6 @@ function is575(text) {
 
   return first.length === 5 && second.length === 7 && third.length === 5;
 }
-app.use(express.json());
 
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
 
@@ -30,20 +31,18 @@ app.post('/webhook', async (req, res) => {
     const replyToken = event.replyToken;
     const userText = event.message.text;
 
+    // 👇 ここで判定
+    let replyText;
+
+    if (is575(userText)) {
+      replyText = "五七五！ナイス川柳👍";
+    } else {
+      replyText = "五七五じゃないかも🤔";
+    }
+
     const message = {
       type: "text",
-     let replyText;
-
-if (is575(userText)) {
-  replyText = "五七五！ナイス川柳👍";
-} else {
-  replyText = "五七五じゃないかも🤔";
-}
-
-const message = {
-  type: "text",
-  text: replyText
-};
+      text: replyText
     };
 
     await axios.post(
