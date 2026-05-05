@@ -22,7 +22,7 @@ function createQuickReplyMessage(text) {
             text: "/help"
           }
         }
-        {
+        {  ,
 
           type: "action",
 
