@@ -39,7 +39,9 @@ if (userText.trim() === "/help") {
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken,
-      messages: [{ type: "text", text: "使い方ガイド😎" }]
+      messages: [{ type: "text", text: "使い方ガイド😎
+       /help 使い方ガイド表示
+        /news 日本、世界のニュー表示" }]
     },
     {
       headers: {
