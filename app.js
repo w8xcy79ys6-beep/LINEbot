@@ -389,7 +389,7 @@ else if (userText.trim() === "/shiritori") {
 else if (isShiritori) {
 
   const word = toHiragana(userText.trim()).replace(/[^ぁ-ん]/g, '');
-　  if (!word) {
+  if (!word) {
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
       {
@@ -466,22 +466,7 @@ await axios.post(
     }
   }
 );
-return;
-    lastWord = botWord;
 
-    await axios.post(
-      "https://api.line.me/v2/bot/message/reply",
-      {
-        replyToken,
-        messages: [createQuickReplyMessage(`🤖 ${botWord}`)]
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-        }
-      }
-    );
     return;
   }
 
