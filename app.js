@@ -33,7 +33,7 @@ app.post('/webhook', async (req, res) => {
 
     // 👇 ここで判定
     let replyText;
-if (userText === "/help") {
+if (userText.trim() === "/help") {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
@@ -42,6 +42,7 @@ if (userText === "/help") {
     },
     {
       headers: {
+        "Content-Type": "application/json"
         Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
