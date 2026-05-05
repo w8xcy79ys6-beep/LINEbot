@@ -1,3 +1,5 @@
+let lastWord = "";
+let isShiritori = false;
 const express = require('express');
 const axios = require('axios');
 function createQuickReplyMessage(text) {
@@ -360,6 +362,164 @@ else if (userText.startsWith("/en")) {
     );
   }
 }
+const words = [
+  "りんご","ごりら","らっぱ","ぱん","ねこ","こいぬ","ぬま",
+  "まくら","らいおん","んまい","いぬ","うし","しか","からす",
+  "すいか","かめ","めだか","かさ","さかな","なす"
+];
+else if (userText === "/shiritori") {
+  isShiritori = true;
+  lastWord = "";
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage("しりとりスタート！好きな言葉をどうぞ")]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (isShiritori) {
+
+  const word = userText.trim();
+
+  // んで終了
+  if (word.endsWith("ん")) {
+    isShiritori = false;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("『ん』で終わったのであなたの負け！😢")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  // 最初
+  if (!lastWord) {
+    lastWord = word;
+
+    const nextChar = word.slice(-1);
+
+    const candidates = words.filter(w => w.startsWith(nextChar));
+
+    const botWord = candidates[Math.floor(Math.random() * candidates.length)];
+
+    lastWord = botWord;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage(`🤖 ${botWord}`)]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  // 文字チェック
+  const lastChar = lastWord.slice(-1);
+  if (!word.startsWith(lastChar)) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage(`「${lastChar}」から始めて！`)]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  const nextChar = word.slice(-1);
+
+  // Bot候補
+  const candidates = words.filter(w => w.startsWith(nextChar));
+
+  if (candidates.length === 0) {
+    isShiritori = false;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("思いつかなかった…あなたの勝ち！🎉")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  const botWord = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // Botが負け
+  if (botWord.endsWith("ん")) {
+    isShiritori = false;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage(`🤖 ${botWord}\n…あ、『ん』で負けた😢`)]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  lastWord = botWord;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(`🤖 ${botWord}`)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+
+
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
