@@ -58,12 +58,12 @@ if (userText.trim() === "/help") {
   try {
     // 🌍 世界ニュース
     const worldRes = await axios.get(
-      `https://newsapi.org/v2/top-headlines?language=en&pageSize=1&apiKey=${apiKey}`
+      `https://newsapi.org/v2/top-headlines?language=ja&pageSize=1&apiKey=${apiKey}`
     );
 
     // 🇯🇵 日本ニュース
     const jpRes = await axios.get(
-  `https://newsapi.org/v2/top-headlines?language=ja&pageSize=1&apiKey=${apiKey}`
+  `https://newsapi.org/v2/top-headlines?sources=nhk-news&pageSize=1&apiKey=${apiKey}`
 );
 
     const world = worldRes.data.articles?.[0];
