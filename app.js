@@ -1,6 +1,31 @@
 const express = require('express');
 const axios = require('axios');
-
+function createQuickReplyMessage(text) {
+  return {
+    type: "text",
+    text: text,
+    quickReply: {
+      items: [
+        {
+          type: "action",
+          action: {
+            type: "message",
+            label: "📰 ニュース",
+            text: "/news"
+          }
+        },
+        {
+          type: "action",
+          action: {
+            type: "message",
+            label: "📖 ヘルプ",
+            text: "/help"
+          }
+        }
+      ]
+    }
+  };
+}
 const app = express();
 app.use(express.json());
 
@@ -39,9 +64,9 @@ if (userText.trim() === "/help") {
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken,
-      messages: [{ type: "text", text: `使い方ガイド😎
+      messages: [createQuickReplyMessage(`使い方ガイド😎
 /help 使い方ガイド表示
-/news 日本、世界のニュース表示` }]
+/news 日本、世界のニュース表示`)]
     },
     {
       headers: {
@@ -111,7 +136,7 @@ const text =
       "https://api.line.me/v2/bot/message/reply",
       {
         replyToken,
-        messages: [{ type: "text", text }]
+        messages: [createQuickReplyMessage(text)]
       },
       {
         headers: {
