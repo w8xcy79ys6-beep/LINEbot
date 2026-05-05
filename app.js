@@ -68,11 +68,11 @@ const worldLinks = worldRes.data.match(/<link>(.*?)<\/link>/g);
 const jpTitles = jpRes.data.match(/<title>(.*?)<\/title>/g);
 const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
 
-const worldTitle = worldTitles?.[1]?.replace(/<\/?title>/g, "") || "取得失敗";
-const worldLink = worldLinks?.[1]?.replace(/<\/?link>/g, "") || "";
+const worldTitle = worldTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
+const worldLink = worldLinks?.[2]?.replace(/<\/?link>/g, "") || "";
 
-const jpTitle = jpTitles?.[1]?.replace(/<\/?title>/g, "") || "取得失敗";
-const jpLink = jpLinks?.[1]?.replace(/<\/?link>/g, "") || "";
+const jpTitle = jpTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
+const jpLink = jpLinks?.[2]?.replace(/<\/?link>/g, "") || "";
 
     const text =
 `【今日のニュース📰】
