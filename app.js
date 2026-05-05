@@ -166,7 +166,7 @@ const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
 else if (userText.startsWith("/weather")) {
 
   const apiKey = process.env.WEATHER_API_KEY;
-  const city = userText.replace("/weather", "").trim();
+  let city = userText.replace("/weather", "").trim();
 if (city === "大阪") city = "Osaka";
 
   if (city === "東京") city = "Tokyo";
@@ -244,10 +244,7 @@ else if (is575(userText)) {
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken: replyToken,
-      messages: [{
-        type: "text",
-        text: "五七五！ナイス川柳👍"
-      }]
+      messages: [createQuickReplyMessage("五七五！ナイス川柳👍")]
     },
     
     
