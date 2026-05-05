@@ -22,6 +22,55 @@ function createQuickReplyMessage(text) {
             text: "/help"
           }
         }
+        {
+
+          type: "action",
+
+          action: {
+
+            type: "message",
+
+            label: "📍大阪",
+
+            text: "/weather 大阪"
+
+          }
+
+        },
+
+        {
+
+          type: "action",
+
+          action: {
+
+            type: "message",
+
+            label: "📍東京",
+
+            text: "/weather 東京"
+
+          }
+
+        },
+
+        {
+
+          type: "action",
+
+          action: {
+
+            type: "message",
+
+            label: "📍熊本",
+
+            text: "/weather 熊本"
+
+          }
+
+        }
+
+ 
       ]
     }
   };
