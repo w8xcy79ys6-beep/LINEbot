@@ -114,7 +114,6 @@ const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
     const jp2Link = jpLinks?.[3]?.replace(/<\/?link>/g, "") || "";
 
     const text =
-const text =
 `【今日のニュース📰】
 
 🌍 世界
