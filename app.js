@@ -293,6 +293,72 @@ if (city.includes("熊本") || city.includes("kumamoto")) city = "Kumamoto";
     );
   }
 }
+else if (userText.startsWith("/en")) {
+
+  const word = userText.replace("/en", "").trim();
+
+  if (!word) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "使い方：/en apple"
+        }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  try {
+    const resTrans = await axios.get(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|ja`
+    );
+
+    const translated = resTrans.data.responseData.translatedText;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage(`📖 翻訳結果\n\n${word} → ${translated}`)]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "翻訳失敗😢"
+        }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+  }
+}
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
