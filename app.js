@@ -25,14 +25,15 @@ function is575(text) {
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
 
 app.post('/webhook', async (req, res) => {
+  if (!req.body.events || req.body.events.length === 0) {
+  return res.sendStatus(200);
+}
   const event = req.body.events[0];
 
   if (event.type === 'message') {
     const replyToken = event.replyToken;
     const userText = event.message.text;
 
-    // 👇 ここで判定
-    let replyText;
 if (userText.trim() === "/help") {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
