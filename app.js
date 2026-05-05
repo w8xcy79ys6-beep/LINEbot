@@ -66,6 +66,7 @@ if (userText.trim() === "/help") {
       replyToken,
       messages: [createQuickReplyMessage(`使い方ガイド😎
 /help 使い方ガイド表示
+/weather 大阪　大阪の天気　東京、熊本に対応
 /news 日本、世界のニュース表示`)]
     },
     {
@@ -167,9 +168,13 @@ else if (userText.startsWith("/weather")) {
 
   const apiKey = process.env.WEATHER_API_KEY;
   let city = userText.replace("/weather", "").trim();
-if (city === "大阪") city = "Osaka";
+  city = city.toLowerCase();
 
-  if (city === "東京") city = "Tokyo";
+if (city.includes("大阪") || city.includes("osaka")) city = "Osaka";
+if (city.includes("東京") || city.includes("tokyo")) city = "Tokyo";
+  city = city.toLowerCase();
+
+if (city.includes("熊本") || city.includes("kumamoto")) city = "kumamoto";
   if (!city) {
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
@@ -192,7 +197,7 @@ if (city === "大阪") city = "Osaka";
 
   try {
     const resWeather = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ja`
+      `https://api.openweathermap.org/data/2.5/weather?q=${city},jp&appid=${apiKey}&units=metric&lang=ja`
     );
 
     const data = resWeather.data;
