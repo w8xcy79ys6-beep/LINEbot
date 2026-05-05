@@ -163,6 +163,80 @@ const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
     );
   }
 }
+else if (userText.startsWith("/weather")) {
+
+  const apiKey = process.env.WEATHER_API_KEY;
+  const city = userText.replace("/weather", "").trim();
+
+  if (!city) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "使い方：/weather 東京"
+        }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  try {
+    const resWeather = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ja`
+    );
+
+    const data = resWeather.data;
+
+    const text =
+`📍${data.name}の天気
+
+☁️ ${data.weather[0].description}
+🌡 気温：${data.main.temp}℃
+🤒 体感：${data.main.feels_like}℃`;
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage(text)]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "都市が見つからないか、エラー😢"
+        }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+  }
+}
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
