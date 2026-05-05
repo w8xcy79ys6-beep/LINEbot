@@ -68,11 +68,25 @@ const worldLinks = worldRes.data.match(/<link>(.*?)<\/link>/g);
 const jpTitles = jpRes.data.match(/<title>(.*?)<\/title>/g);
 const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
 
-const worldTitle = worldTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
-const worldLink = worldLinks?.[2]?.replace(/<\/?link>/g, "") || "";
+// 🌍 世界（2件）
 
-const jpTitle = jpTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
-const jpLink = jpLinks?.[2]?.replace(/<\/?link>/g, "") || "";
+    const world1Title = worldTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
+
+    const world1Link = worldLinks?.[2]?.replace(/<\/?link>/g, "") || "";
+
+    const world2Title = worldTitles?.[3]?.replace(/<\/?title>/g, "") || "取得失敗";
+
+    const world2Link = worldLinks?.[3]?.replace(/<\/?link>/g, "") || "";
+
+    // 🇯🇵 日本（2件）
+
+    const jp1Title = jpTitles?.[2]?.replace(/<\/?title>/g, "") || "取得失敗";
+
+    const jp1Link = jpLinks?.[2]?.replace(/<\/?link>/g, "") || "";
+
+    const jp2Title = jpTitles?.[3]?.replace(/<\/?title>/g, "") || "取得失敗";
+
+    const jp2Link = jpLinks?.[3]?.replace(/<\/?link>/g, "") || "";
 
     const text =
 `【今日のニュース📰】
