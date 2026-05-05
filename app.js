@@ -35,11 +35,24 @@ app.post('/webhook', async (req, res) => {
     let replyText;
 
     if (is575(userText)) {
-      replyText = "五七五！ナイス川柳👍";
-    } else {
-      replyText = "五七五じゃないかも🤔";
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken: replyToken,
+      messages: [{
+        type: "text",
+        text: "五七五！ナイス川柳👍"
+      }]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
     }
-
+  );
+}
+    
     const message = {
       type: "text",
       text: replyText
