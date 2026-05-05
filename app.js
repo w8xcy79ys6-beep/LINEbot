@@ -116,7 +116,8 @@ if (userText.trim() === "/help") {
       messages: [createQuickReplyMessage(`使い方ガイド😎
 /help 使い方ガイド表示
 /weather 大阪　大阪の天気　東京、熊本に対応
-/news 日本、世界のニュース表示`)]
+/news 日本、世界のニュース表示
+/en 英単語　英語→日本語翻訳`)]
     },
     {
       headers: {
