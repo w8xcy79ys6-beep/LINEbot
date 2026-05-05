@@ -1,5 +1,9 @@
 let lastWord = "";
 let isShiritori = false;
+const words = [
+  "りんご","ごりら","らっぱ","ぱん","ねこ","こいぬ","ぬま",
+  "まくら","らいおん","うまい","いぬ","うし","しか","からす",
+  "すいか","かめ","めだか","かさ","さかな","なす"];
 const express = require('express');
 const axios = require('axios');
 function createQuickReplyMessage(text) {
@@ -362,12 +366,8 @@ else if (userText.startsWith("/en")) {
     );
   }
 }
-const words = [
-  "りんご","ごりら","らっぱ","ぱん","ねこ","こいぬ","ぬま",
-  "まくら","らいおん","んまい","いぬ","うし","しか","からす",
-  "すいか","かめ","めだか","かさ","さかな","なす"
-];
-else if (userText === "/shiritori") {
+else if (userText.trim() === "/shiritori") {
+
   isShiritori = true;
   lastWord = "";
 
@@ -460,7 +460,24 @@ else if (isShiritori) {
 
   // Bot候補
   const candidates = words.filter(w => w.startsWith(nextChar));
+if (candidates.length === 0) {
+  isShiritori = false;
 
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage("思いつかなかった…あなたの勝ち！🎉")]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+  return;
+}
   if (candidates.length === 0) {
     isShiritori = false;
 
