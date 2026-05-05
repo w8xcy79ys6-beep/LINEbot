@@ -33,8 +33,21 @@ app.post('/webhook', async (req, res) => {
 
     // 👇 ここで判定
     let replyText;
-
-    if (is575(userText)) {
+if (userText === "/help") {
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{ type: "text", text: "😎" }]
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+  else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
@@ -44,26 +57,8 @@ app.post('/webhook', async (req, res) => {
         text: "五七五！ナイス川柳👍"
       }]
     },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-      }
-    }
-  );
-}
     
-    const message = {
-      type: "text",
-      text: replyText
-    };
-
-    await axios.post(
-      "https://api.line.me/v2/bot/message/reply",
-      {
-        replyToken: replyToken,
-        messages: [message]
-      },
+    
       {
         headers: {
           "Content-Type": "application/json",
