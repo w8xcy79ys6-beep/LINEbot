@@ -167,7 +167,9 @@ else if (userText.startsWith("/weather")) {
 
   const apiKey = process.env.WEATHER_API_KEY;
   const city = userText.replace("/weather", "").trim();
+if (city === "大阪") city = "Osaka";
 
+  if (city === "東京") city = "Tokyo";
   if (!city) {
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
