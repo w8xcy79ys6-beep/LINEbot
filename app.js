@@ -68,6 +68,7 @@ if (userText.trim() === "/help") {
       }
     );
   }
+  }
 
   res.sendStatus(200);
 });
