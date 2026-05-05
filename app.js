@@ -66,8 +66,8 @@ if (userText.trim() === "/help") {
   `https://newsapi.org/v2/top-headlines?language=ja&pageSize=1&apiKey=${apiKey}`
 );
 
-    const world = worldRes.data.articles[0];
-    const japan = jpRes.data.articles[0];
+    const world = worldRes.data.articles?.[0];
+    const japan = jpRes.data.articles?.[0];
 
     const text =
 `【今日のニュース📰】
