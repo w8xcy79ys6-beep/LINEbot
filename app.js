@@ -39,9 +39,9 @@ if (userText.trim() === "/help") {
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken,
-      messages: [{ type: "text", text: "使い方ガイド😎
-       /help 使い方ガイド表示
-        /news 日本、世界のニュー表示" }]
+      messages: [{ type: "text", text: `使い方ガイド😎
+/help 使い方ガイド表示
+/news 日本、世界のニュース表示` }]
     },
     {
       headers: {
@@ -58,7 +58,7 @@ if (userText.trim() === "/help") {
   try {
     // 🌍 世界ニュース
     const worldRes = await axios.get(
-      `https://newsapi.org/v2/top-headlines?language=ja&pageSize=1&apiKey=${apiKey}`
+      `https://newsapi.org/v2/top-headlines?language=en&pageSize=1&apiKey=${apiKey}`
     );
 
     // 🇯🇵 日本ニュース
