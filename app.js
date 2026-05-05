@@ -89,15 +89,22 @@ const jpLinks = jpRes.data.match(/<link>(.*?)<\/link>/g);
     const jp2Link = jpLinks?.[3]?.replace(/<\/?link>/g, "") || "";
 
     const text =
+const text =
 `【今日のニュース📰】
 
 🌍 世界
-${worldTitle}
-${worldLink}
+① ${world1Title}
+👉 ${world1Link}
+
+② ${world2Title}
+👉 ${world2Link}
 
 🇯🇵 日本
-${jpTitle}
-${jpLink}
+① ${jp1Title}
+👉 ${jp1Link}
+
+② ${jp2Title}
+👉 ${jp2Link}
 `;
 
     await axios.post(
