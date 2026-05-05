@@ -21,8 +21,8 @@ function createQuickReplyMessage(text) {
             label: "📖 ヘルプ",
             text: "/help"
           }
-        }
-        {  ,
+        },
+        {
 
           type: "action",
 
