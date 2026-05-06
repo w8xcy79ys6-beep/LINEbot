@@ -806,13 +806,22 @@ else if (userText === "/slot") {
 
   const items = ["🍒","🔔","7️⃣","🍉","⭐"];
 
-  const a = items[Math.floor(Math.random()*items.length)];
-  const b = items[Math.floor(Math.random()*items.length)];
-  const c = items[Math.floor(Math.random()*items.length)];
+  let a = items[Math.floor(Math.random()*items.length)];
+  let b = items[Math.floor(Math.random()*items.length)];
+  let c = items[Math.floor(Math.random()*items.length)];
 
   let result = "ハズレ😢";
 let reward = 0;
-
+// 🔥 救済（ハズレを減らす）
+if (Math.random() < 0.3) { // ← 30%で強制的に当たり寄り
+  if (Math.random() < 0.5) {
+    // 2つ揃いにする
+    a = b;
+  } else {
+    // チェリーを1個入れる
+    a = "🍒";
+  }
+}
 // 🎰 役判定
 if (a === b && b === c) {
   // 3つ揃い
