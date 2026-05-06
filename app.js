@@ -828,10 +828,48 @@ else if (userText.startsWith("/rand")) {
     }
   );
 }
-else if (userText === "/slot") {
-if (userCoins[userId] <= 0) {
-  userCoins[userId] = 100;
+const userLastAd = {};
+
+else if (userText === "/ad") {
+
+  const now = Date.now();
+
+  if (userLastAd[userId] && now - userLastAd[userId] < 5000) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("⏳ まだ広告見れない！（5秒待って）")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  userLastAd[userId] = now;
+
+  userCoins[userId] += 100;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage("📺 広告視聴完了！\n💰 +100コイン")]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
 }
+else if (userText === "/slot") {
   const cost = 50;
 
   // 💰 コイン足りる？
