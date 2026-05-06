@@ -79,18 +79,19 @@ function createQuickReplyMessage(text) {
           type: "action",
           action: {
             type: "message",
-            label: "📰 ニュース",
-            text: "/news"
+            label: "📖 ヘルプ",
+            text: "/help"
           }
         },
         {
           type: "action",
           action: {
             type: "message",
-            label: "📖 ヘルプ",
-            text: "/help"
+            label: "📰 ニュース",
+            text: "/news"
           }
         },
+        
         {
 
           type: "action",
@@ -122,14 +123,7 @@ function createQuickReplyMessage(text) {
           }
 
         },
-{
-  type: "action",
-  action: {
-    type: "message",
-    label: "🧮 計算",
-    text: "/cal 1+2"
-  }
-},
+
         
         {
 
@@ -150,11 +144,26 @@ function createQuickReplyMessage(text) {
   type: "action",
   action: {
     type: "message",
+    label: "🎰 スロット",
+    text: "/slot"
+  }
+}
+        {
+  type: "action",
+  action: {
+    type: "message",
     label: "🎮 しりとり",
     text: "/shiritori"
   }
 },
-
+{
+  type: "action",
+  action: {
+    type: "message",
+    label: "🧮 計算",
+    text: "/cal 1+2"
+  }
+},
  
       ]
     }
@@ -203,6 +212,7 @@ if (userText.trim() === "/help") {
 /weather 地名　大阪、熊本、東京に対応
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
+/slot スロット開始
 /cal 1+4 電卓
 /rand A B AからBまでの乱数表示
 /en 英単語　英語→日本語翻訳`)]
@@ -755,6 +765,39 @@ else if (userText.startsWith("/rand")) {
     {
       replyToken,
       messages: [createQuickReplyMessage(`🎲 ${min}〜${max} → ${result}`)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (userText === "/slot") {
+  const items = ["🍒","🔔","7️⃣","🍉","⭐"];
+
+  const a = items[Math.floor(Math.random()*items.length)];
+  const b = items[Math.floor(Math.random()*items.length)];
+  const c = items[Math.floor(Math.random()*items.length)];
+
+  let result = "ハズレ😢";
+
+  if (a === b && b === c) {
+    if (a === "7️⃣") {
+      result = "🎉🎉 激アツ！777揃い！";
+    } else {
+      result = "🎉 当たり！";
+    }
+  }
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [
+        createQuickReplyMessage(`🎰 ${a} | ${b} | ${c}\n${result}`)
+      ]
     },
     {
       headers: {
