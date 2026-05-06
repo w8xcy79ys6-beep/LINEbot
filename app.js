@@ -227,15 +227,31 @@ function createQuickReplyMessage(text) {
           }
 
         },
-        {
+        
+  {
   type: "action",
   action: {
     type: "message",
-    label: "🎰 スロット",
+    label: "🎰 1回",
     text: "/slot"
   }
 },
-  
+{
+  type: "action",
+  action: {
+    type: "message",
+    label: "🎰 10連",
+    text: "/slot10"
+  }
+},
+{
+  type: "action",
+  action: {
+    type: "message",
+    label: "🔥 100連",
+    text: "/slot100"
+  }
+},
         {
   type: "action",
   action: {
@@ -931,7 +947,7 @@ if (userCoins[userId] >= 50) {
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken,
-      messages: [createQuickReplyMessage("📺 広告視聴完了！\n💰 +100コイン")]
+      messages: [createQuickReplyMessage("📺 広告視聴完了！\n💰 +500コイン")]
     },
     {
       headers: {
@@ -1069,6 +1085,50 @@ else if (userText === "/rate") {
         "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
+  );
+}
+else if (userText === "/slot100") {
+  const cost = 50 * 100;
+
+  if (userCoins[userId] < cost) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("コイン足りない😢")]
+      },
+      { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
+    );
+    return;
+  }
+
+  userCoins[userId] -= cost;
+
+  let total = 0;
+  let jackpot = 0;
+
+  for (let i = 0; i < 100; i++) {
+    const { text, reward } = spinSlot();
+    total += reward;
+
+    if (text.includes("777")) jackpot++;
+  }
+
+  userCoins[userId] += total;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(
+`🎰 100連結果
+
+🎉 777回数：${jackpot}
+💰 合計 +${total}
+🪙 残り：${userCoins[userId]}`
+      )]
+    },
+    { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
   );
 }
 else if (userText === "/coin") {
