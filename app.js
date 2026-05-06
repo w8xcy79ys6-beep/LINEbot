@@ -130,14 +130,7 @@ function createQuickReplyMessage(text) {
     text: "/cal 1+2"
   }
 },
-        {
-  type: "action",
-  action: {
-    type: "message",
-    label: "🎮 しりとり",
-    text: "/shiritori"
-  }
-},
+        
         {
 
           type: "action",
@@ -152,7 +145,15 @@ function createQuickReplyMessage(text) {
 
           }
 
-        }
+        },
+        {
+  type: "action",
+  action: {
+    type: "message",
+    label: "🎮 しりとり",
+    text: "/shiritori"
+  }
+},
 
  
       ]
@@ -202,6 +203,7 @@ if (userText.trim() === "/help") {
 /weather 地名　大阪、熊本、東京に対応
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
+/cal 1+4 電卓
 /en 英単語　英語→日本語翻訳`)]
     },
     {
