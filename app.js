@@ -925,7 +925,7 @@ if (userCoins[userId] >= 50) {
 
   userLastAd[userId] = now;
 
-  userCoins[userId] += 100;
+  userCoins[userId] += 500;
 
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
