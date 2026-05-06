@@ -669,7 +669,7 @@ else if (userText.startsWith("/cal")) {
   }
 
   try {
-    const result = eval(exp);
+    const result = Function('"use strict"; return (' + exp + ')')();
 
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
