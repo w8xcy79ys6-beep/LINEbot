@@ -147,7 +147,7 @@ function createQuickReplyMessage(text) {
     label: "🎰 スロット",
     text: "/slot"
   }
-}
+},
         {
   type: "action",
   action: {
