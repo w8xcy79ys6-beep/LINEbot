@@ -828,7 +828,9 @@ else if (userText.startsWith("/rand")) {
   );
 }
 else if (userText === "/slot") {
-
+if (userCoins[userId] <= 0) {
+  userCoins[userId] = 100;
+}
   const cost = 50;
 
   // 💰 コイン足りる？
