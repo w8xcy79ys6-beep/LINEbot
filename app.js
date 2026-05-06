@@ -1,5 +1,6 @@
 let lastWord = "";
 let isShiritori = false;
+const userCoins = {};
 const words = [
   "あたり","いちげき","うちどめ","えんしゅつ","おすいち",
 
@@ -197,7 +198,11 @@ app.post('/webhook', async (req, res) => {
   return res.sendStatus(200);
 }
   const event = req.body.events[0];
+const userId = event.source.userId;
 
+if (!userCoins[userId]) {
+  userCoins[userId] = 1000;
+}
   if (event.type === 'message') {
     const replyToken = event.replyToken;
     const userText = event.message.text;
@@ -775,6 +780,30 @@ else if (userText.startsWith("/rand")) {
   );
 }
 else if (userText === "/slot") {
+
+  const cost = 50;
+
+  // 💰 コイン足りる？
+  if (userCoins[userId] < cost) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("コイン足りない😢（50必要）")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  // 🎰 回す（コイン消費）
+  userCoins[userId] -= cost;
+
   const items = ["🍒","🔔","7️⃣","🍉","⭐"];
 
   const a = items[Math.floor(Math.random()*items.length)];
@@ -782,21 +811,33 @@ else if (userText === "/slot") {
   const c = items[Math.floor(Math.random()*items.length)];
 
   let result = "ハズレ😢";
+  let reward = 0;
 
   if (a === b && b === c) {
     if (a === "7️⃣") {
       result = "🎉🎉 激アツ！777揃い！";
+      reward = 500;
     } else {
       result = "🎉 当たり！";
+      reward = 150;
     }
   }
+
+  // 💰 報酬追加
+  userCoins[userId] += reward;
 
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
       replyToken,
       messages: [
-        createQuickReplyMessage(`🎰 ${a} | ${b} | ${c}\n${result}`)
+        createQuickReplyMessage(
+          `🎰 ${a} | ${b} | ${c}
+${result}
+
+💰 +${reward}コイン
+🪙 残り：${userCoins[userId]}`
+        )
       ]
     },
     {
