@@ -811,17 +811,32 @@ else if (userText === "/slot") {
   const c = items[Math.floor(Math.random()*items.length)];
 
   let result = "ハズレ😢";
-  let reward = 0;
+let reward = 0;
 
-  if (a === b && b === c) {
-    if (a === "7️⃣") {
-      result = "🎉🎉 激アツ！777揃い！";
-      reward = 500;
-    } else {
-      result = "🎉 当たり！";
-      reward = 150;
-    }
+// 🎰 役判定
+if (a === b && b === c) {
+  // 3つ揃い
+  if (a === "7️⃣") {
+    result = "🎉🎉 激アツ！777揃い！";
+    reward = 500;
+  } else if (a === "⭐") {
+    result = "🌟 レア役！スター揃い！";
+    reward = 300;
+  } else {
+    result = "🎉 当たり！（3つ揃い）";
+    reward = 150;
   }
+
+} else if (a === b || b === c || a === c) {
+  // 2つ揃い
+  result = "✨ 2つ揃い！";
+  reward = 50;
+
+} else if (a === "🍒" || b === "🍒" || c === "🍒") {
+  // チェリー救済
+  result = "🍒 チェリー！";
+  reward = 20;
+}
 
   // 💰 報酬追加
   userCoins[userId] += reward;
@@ -832,13 +847,28 @@ else if (userText === "/slot") {
       replyToken,
       messages: [
         createQuickReplyMessage(
-          `🎰 ${a} | ${b} | ${c}
+          `${a} | ${b} | ${c}
 ${result}
 
 💰 +${reward}コイン
 🪙 残り：${userCoins[userId]}`
         )
       ]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (userText === "/coin") {
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(`🪙 あなたのコイン：${userCoins[userId]}`)]
     },
     {
       headers: {
