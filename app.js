@@ -878,7 +878,7 @@ else if (userText === "/slot") {
       "https://api.line.me/v2/bot/message/reply",
       {
         replyToken,
-        messages: [createQuickReplyMessage("コイン足りない😢（50必要）")]
+        messages: [createQuickReplyMessage("コイン足りない😢 ／adで広告視聴&無料コインGET！")]
       },
       {
         headers: {
