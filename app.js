@@ -204,6 +204,7 @@ if (userText.trim() === "/help") {
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
 /cal 1+4 電卓
+/rand A B AからBまでの乱数表示
 /en 英単語　英語→日本語翻訳`)]
     },
     {
@@ -700,7 +701,69 @@ else if (userText.startsWith("/cal")) {
     );
   }
 }
+else if (userText.startsWith("/rand")) {
+  const args = userText.replace("/rand", "").trim().split(" ");
 
+  if (args.length < 2) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "使い方：/rand 最小 最大\n例：/rand 1 100"
+        }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  let min = parseInt(args[0]);
+  let max = parseInt(args[1]);
+
+  if (isNaN(min) || isNaN(max)) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{ type: "text", text: "数字で入力して！" }]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  if (min > max) {
+    [min, max] = [max, min]; // 入れ替え
+  }
+
+  const result = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(`🎲 ${min}〜${max} → ${result}`)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
