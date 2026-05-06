@@ -288,7 +288,7 @@ app.post('/webhook', async (req, res) => {
 const userId = event.source.userId;
 
 if (!userCoins[userId]) {
-  userCoins[userId] = 1000;
+  userCoins[userId] = 10000;
 }
   if (event.type === 'message') {
     const replyToken = event.replyToken;
