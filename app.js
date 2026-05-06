@@ -863,7 +863,7 @@ if (userCoins[userId] <= 0) {
   let result = "ハズレ😢";
 let reward = 0;
 // 🔥 救済（ハズレを減らす）
-if (Math.random() < 0.3) { // ← 30%で強制的に当たり寄り
+if (Math.random() < 0.05) { // ← 30%で強制的に当たり寄り
   if (Math.random() < 0.5) {
     // 2つ揃いにする
     a = b;
@@ -876,11 +876,11 @@ if (Math.random() < 0.3) { // ← 30%で強制的に当たり寄り
 if (a === b && b === c) {
   // 3つ揃い
   if (a === "7️⃣") {
-    result = "🎉🎉 激アツ！777揃い！";
-    reward = 500;
+    result = "🎉🎉jackpot！！777揃い！";
+    reward = 3000;
   } else if (a === "⭐") {
     result = "🌟 レア役！スター揃い！";
-    reward = 300;
+    reward = 1000;
   } else {
     result = "🎉 当たり！（3つ揃い）";
     reward = 150;
@@ -889,13 +889,8 @@ if (a === b && b === c) {
 } else if (a === b || b === c || a === c) {
   // 2つ揃い
   result = "✨ 2つ揃い！";
-  reward = 50;
+  reward = 25;
 
-} else if (a === "🍒" || b === "🍒" || c === "🍒") {
-  // チェリー救済
-  result = "🍒 チェリー！";
-  reward = 20;
-}
 
   // 💰 報酬追加
   userCoins[userId] += reward;
