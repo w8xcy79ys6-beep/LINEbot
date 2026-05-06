@@ -2,6 +2,47 @@ let lastWord = "";
 let isShiritori = false;
 const userCoins = {};
 const userNames = {};
+function spinSlot() {
+  const items = ["🍒","🔔","7️⃣","🍉","⭐"];
+
+  let a = items[Math.floor(Math.random()*items.length)];
+  let b = items[Math.floor(Math.random()*items.length)];
+  let c = items[Math.floor(Math.random()*items.length)];
+
+  let result = "ハズレ😢";
+  let reward = 0;
+
+  // 救済
+  if (Math.random() < 0.00001) {
+    if (Math.random() < 0.5) {
+      a = b;
+    } else {
+      a = "🍒";
+    }
+  }
+
+  // 判定
+  if (a === b && b === c) {
+    if (a === "7️⃣") {
+      result = "🎉🎉777揃い！";
+      reward = 3000;
+    } else if (a === "⭐") {
+      result = "🌟スター揃い！";
+      reward = 1500;
+    } else {
+      result = "🎉3つ揃い！";
+      reward = 500;
+    }
+  } else if (a === b || b === c || a === c) {
+    result = "✨2つ揃い！";
+    reward = 25;
+  }
+
+  return {
+    text: `${a} | ${b} | ${c}\n${result}`,
+    reward
+  };
+}
 const userLastAd = {};
 async function getUserName(userId) {
   if (userNames[userId]) return userNames[userId];
@@ -903,90 +944,80 @@ if (userCoins[userId] >= 50) {
 else if (userText === "/slot") {
   const cost = 50;
 
-  // 💰 コイン足りる？
   if (userCoins[userId] < cost) {
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
       {
         replyToken,
-        messages: [createQuickReplyMessage("コイン足りない😢 ／adで広告視聴&無料コインGET！")]
+        messages: [createQuickReplyMessage("コイン足りない😢 ／adでGET！")]
       },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-        }
-      }
+      { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
     );
     return;
   }
 
-  // 🎰 回す（コイン消費）
   userCoins[userId] -= cost;
 
-  const items = ["🍒","🔔","7️⃣","🍉","⭐"];
+  const { text, reward } = spinSlot();
 
-  let a = items[Math.floor(Math.random()*items.length)];
-  let b = items[Math.floor(Math.random()*items.length)];
-  let c = items[Math.floor(Math.random()*items.length)];
+  userCoins[userId] += reward;
 
-  let result = "ハズレ😢";
-let reward = 0;
-// 🔥 救済（ハズレを減らす）
-if (Math.random() < 0.00001) { // ← 30%で強制的に当たり寄り
-  if (Math.random() < 0.5) {
-    // 2つ揃いにする
-    a = b;
-  } else {
-    // チェリーを1個入れる
-    a = "🍒";
-  }
-}
-// 🎰 役判定
-if (a === b && b === c) {
-  if (a === "7️⃣") {
-    result = "🎉🎉jackpot！！777揃い！";
-    reward = 3000;
-  } else if (a === "⭐") {
-    result = "🌟 レア役！スター揃い！";
-    reward = 1500;
-  } else {
-    result = "🎉 当たり！（3つ揃い）";
-    reward = 500;
-  }
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(
+`${text}
 
-} else if (a === b || b === c || a === c) {
-  result = "✨ 2つ揃い！";
-  reward = 25;
-}
-
-// 💰 報酬追加
-userCoins[userId] += reward;
-
-// 📩 返信（ここで1回だけ）
-await axios.post(
-  "https://api.line.me/v2/bot/message/reply",
-  {
-    replyToken,
-    messages: [
-      createQuickReplyMessage(
-`${a} | ${b} | ${c}
-${result}
-
-💰 +${reward}コイン
+💰 +${reward}
 🪙 残り：${userCoins[userId]}`
-      )
-    ]
-  },
-  {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-    }
-  }
-);
+      )]
+    },
+    { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
+  );
 }
-  else if (userText === "/rank") {
+else if (userText === "/slot10") {
+  const cost = 50 * 10;
+
+  if (userCoins[userId] < cost) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("コイン足りない😢")]
+      },
+      { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
+    );
+    return;
+  }
+
+  userCoins[userId] -= cost;
+
+  let total = 0;
+  let log = "";
+
+  for (let i = 0; i < 10; i++) {
+    const { text, reward } = spinSlot();
+    total += reward;
+    log += `【${i+1}回目】\n${text}\n\n`;
+  }
+
+  userCoins[userId] += total;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(
+`${log}
+💰 合計 +${total}
+🪙 残り：${userCoins[userId]}`
+      )]
+    },
+    { headers: { "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}` } }
+  );
+}
+else if (userText === "/rank") {
 
   const text = await getRankingWithMe(userId);
 
