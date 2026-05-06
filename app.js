@@ -828,7 +828,6 @@ else if (userText.startsWith("/rand")) {
     }
   );
 }
-const userLas
 
 else if (userText === "/ad"){
 if (userCoins[userId] >= 50) {
