@@ -2,7 +2,7 @@ let lastWord = "";
 let isShiritori = false;
 const userCoins = {};
 const userNames = {};
-
+const userLastAd = {};
 async function getUserName(userId) {
   if (userNames[userId]) return userNames[userId];
 
@@ -828,9 +828,41 @@ else if (userText.startsWith("/rand")) {
     }
   );
 }
-const userLastAd = {};
+const userLas
 
-else if (userText === "/ad") {
+else if (userText === "/ad"){
+if (userCoins[userId] >= 50) {
+
+    await axios.post(
+
+      "https://api.line.me/v2/bot/message/reply",
+
+      {
+
+        replyToken,
+
+        messages: [createQuickReplyMessage("コイン50未満になると使えます")]
+
+      },
+
+      {
+
+        headers: {
+
+          "Content-Type": "application/json",
+
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+
+        }
+
+      }
+
+    );
+
+    return;
+
+  }
+
 
   const now = Date.now();
 
