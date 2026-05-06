@@ -874,7 +874,6 @@ if (Math.random() < 0.05) { // ← 30%で強制的に当たり寄り
 }
 // 🎰 役判定
 if (a === b && b === c) {
-  // 3つ揃い
   if (a === "7️⃣") {
     result = "🎉🎉jackpot！！777揃い！";
     reward = 3000;
@@ -887,50 +886,35 @@ if (a === b && b === c) {
   }
 
 } else if (a === b || b === c || a === c) {
-  // 2つ揃い
   result = "✨ 2つ揃い！";
   reward = 25;
+}
 
+// 💰 報酬追加
+userCoins[userId] += reward;
 
-  // 💰 報酬追加
-  userCoins[userId] += reward;
-
-  await axios.post(
-    "https://api.line.me/v2/bot/message/reply",
-    {
-      replyToken,
-      messages: [
-        createQuickReplyMessage(
-          `${a} | ${b} | ${c}
+// 📩 返信（ここで1回だけ）
+await axios.post(
+  "https://api.line.me/v2/bot/message/reply",
+  {
+    replyToken,
+    messages: [
+      createQuickReplyMessage(
+`${a} | ${b} | ${c}
 ${result}
 
 💰 +${reward}コイン
 🪙 残り：${userCoins[userId]}`
-        )
-      ]
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-      }
+      )
+    ]
+  },
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
     }
-  );
-}
-else if (userText === "/coin") {
-  await axios.post(
-    "https://api.line.me/v2/bot/message/reply",
-    {
-      replyToken,
-      messages: [createQuickReplyMessage(`🪙 あなたのコイン：${userCoins[userId]}`)]
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-      }
-    }
-  );
+  }
+);
 }
   else if (userText === "/rank") {
 
