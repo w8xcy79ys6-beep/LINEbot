@@ -1040,7 +1040,22 @@ else if (userText === "/rate") {
     }
   );
 }
-  else if (is575(userText)) {
+else if (userText === "/coin") {
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(`🪙 ${userCoins[userId]}コイン`)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
