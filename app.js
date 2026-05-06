@@ -122,7 +122,22 @@ function createQuickReplyMessage(text) {
           }
 
         },
-
+{
+  type: "action",
+  action: {
+    type: "message",
+    label: "🧮 計算",
+    text: "/cal 1+2"
+  }
+},
+        {
+  type: "action",
+  action: {
+    type: "message",
+    label: "🎮 しりとり",
+    text: "/shiritori"
+  }
+},
         {
 
           type: "action",
