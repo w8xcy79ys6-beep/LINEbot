@@ -1,6 +1,51 @@
 let lastWord = "";
 let isShiritori = false;
 const userCoins = {};
+const userNames = {};
+
+async function getUserName(userId) {
+  if (userNames[userId]) return userNames[userId];
+
+  try {
+    const res = await axios.get(
+      `https://api.line.me/v2/bot/profile/${userId}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    const name = res.data.displayName;
+    userNames[userId] = name;
+    return name;
+
+  } catch {
+    return "名無し";
+  }
+}
+
+async function getRankingWithMe(userId) {
+  const ranking = Object.entries(userCoins)
+    .sort((a, b) => b[1] - a[1]);
+
+  let text = "🏆 コインランキング\n\n";
+
+  for (let i = 0; i < Math.min(5, ranking.length); i++) {
+    const [id, coins] = ranking[i];
+    const name = await getUserName(id);
+    text += `${i + 1}位：${name}（${coins}コイン）\n`;
+  }
+
+  const myRank = ranking.findIndex(u => u[0] === userId);
+
+  if (myRank !== -1) {
+    const myCoins = ranking[myRank][1];
+    text += `\n👤 あなた：${myRank + 1}位（${myCoins}コイン）`;
+  }
+
+  return text;
+}
 const words = [
   "あたり","いちげき","うちどめ","えんしゅつ","おすいち",
 
@@ -149,6 +194,7 @@ function createQuickReplyMessage(text) {
     text: "/slot"
   }
 },
+  
         {
   type: "action",
   action: {
@@ -218,6 +264,8 @@ if (userText.trim() === "/help") {
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
 /slot スロット開始
+/coin 持ちメダル表示
+/rank ランキング表示
 /cal 1+4 電卓
 /rand A B AからBまでの乱数表示
 /en 英単語　英語→日本語翻訳`)]
@@ -878,6 +926,24 @@ else if (userText === "/coin") {
     {
       replyToken,
       messages: [createQuickReplyMessage(`🪙 あなたのコイン：${userCoins[userId]}`)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+  else if (userText === "/rank") {
+
+  const text = await getRankingWithMe(userId);
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(text)]
     },
     {
       headers: {
