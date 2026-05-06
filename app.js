@@ -264,6 +264,7 @@ if (userText.trim() === "/help") {
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
 /slot スロット開始
+/rate スロット詳細確率表示
 /coin 持ちメダル表示
 /rank ランキング表示
 /cal 1+4 電卓
@@ -863,7 +864,7 @@ if (userCoins[userId] <= 0) {
   let result = "ハズレ😢";
 let reward = 0;
 // 🔥 救済（ハズレを減らす）
-if (Math.random() < 0.05) { // ← 30%で強制的に当たり寄り
+if (Math.random() < 0.00001) { // ← 30%で強制的に当たり寄り
   if (Math.random() < 0.5) {
     // 2つ揃いにする
     a = b;
@@ -879,10 +880,10 @@ if (a === b && b === c) {
     reward = 3000;
   } else if (a === "⭐") {
     result = "🌟 レア役！スター揃い！";
-    reward = 1000;
+    reward = 1500;
   } else {
     result = "🎉 当たり！（3つ揃い）";
-    reward = 150;
+    reward = 500;
   }
 
 } else if (a === b || b === c || a === c) {
@@ -934,7 +935,43 @@ ${result}
     }
   );
 }
-else if (is575(userText)) {
+else if (userText === "/rate") {
+
+  const text =
+`🎰 スロット確率・配当表
+
+【図柄揃い確率】
+🎉 3つ揃い：4.00%（1/25）
+✨ 2つ揃い：48.00%（12/25）
+😢 ハズレ：48.00%
+機械割120%
+
+【内訳（3つ揃い）】
+7️⃣ 777：0.80%（1/125）
+⭐ スター：0.80%（1/125）
+その他：2.40%（3/125）
+
+【配当】
+7️⃣ → 3000コイン
+⭐ → 1500コイン
+その他3つ → 500コイン
+2つ揃い → 25コイン`;
+  
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [createQuickReplyMessage(text)]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+  else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
