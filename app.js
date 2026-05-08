@@ -1521,11 +1521,7 @@ ${owned.map(t => "・" + t).join("\n")}`
     }
   );
 }
-      // HIGH&LOW用データ
-const highLowData = {};
-const userBetCoins = {};
-    // BLACKJACK用
-const blackjackData = {};
+
 
 // カードを引く
 function drawCard() {
