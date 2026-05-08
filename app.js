@@ -1,7 +1,49 @@
-かlet lastWord = "";
+let lastWord = "";
 let isShiritori = false;
 let userCoins = {};
+let userTitles = {};
+let userOwnedTitles = {};
 const userNames = {};
+
+const titles = [
+  // ノーマル
+  { name: "見習い冒険者", rarity: "N" },
+  { name: "夜ふかし常習犯", rarity: "N" },
+  { name: "ラーメン研究家", rarity: "N" },
+  { name: "猫派", rarity: "N" },
+  { name: "布団の支配者", rarity: "N" },
+  { name: "ぎりぎり人間", rarity: "N" },
+  { name: "ミスの達人", rarity: "N" },
+  { name: "コンビニの民", rarity: "N" },
+  { name: "既読スルー職人", rarity: "N" },
+
+  // レア
+  { name: "深夜テンション", rarity: "R" },
+  { name: "選ばれし者", rarity: "R" },
+  { name: "エナジードリンク中毒", rarity: "R" },
+  { name: "運だけで生きる者", rarity: "R" },
+  { name: "伝説の帰宅部", rarity: "R" },
+  { name: "裏ボス候補", rarity: "R" },
+  { name: "時をかける寝坊", rarity: "R" },
+
+  // スーパーレア
+  { name: "世界線の観測者", rarity: "SR" },
+  { name: "神引きの化身", rarity: "SR" },
+  { name: "深淵を覗く者", rarity: "SR" },
+  { name: "インターネット老人会", rarity: "SR" },
+  { name: "虚無マスター", rarity: "SR" },
+
+  // 激レア
+  { name: "風吹けば名無しの王", rarity: "SSR" },
+  { name: "終焉を告げる者", rarity: "SSR" },
+  { name: "全てを知る名無し", rarity: "SSR" },
+  { name: "運営に愛された者", rarity: "SSR" },
+
+  // 超激レア
+  { name: "ChatGPTに認識された存在", rarity: "UR" },
+  { name: "世界バグ保持者", rarity: "UR" },
+  { name: "宇宙の管理者", rarity: "UR" }
+];
 function spinSlot() {
   const items = ["🍒","🔔","7️⃣","🍉","⭐"];
 
@@ -43,6 +85,21 @@ function spinSlot() {
     reward
   };
 }
+function pullTitleGacha() {
+  const rand = Math.random() * 100;
+
+  let total = 0;
+
+  for (const title of titles) {
+    total += title.chance;
+
+    if (rand <= total) {
+      return title;
+    }
+  }
+
+  return titles[0];
+}
 const userLastAd = {};
 async function getUserName(userId) {
   if (userNames[userId]) return userNames[userId];
@@ -75,7 +132,9 @@ async function getRankingWithMe(userId) {
   for (let i = 0; i < Math.min(5, ranking.length); i++) {
     const [id, coins] = ranking[i];
     const name = await getUserName(id);
-    text += `${i + 1}位：${name}（${coins}コイン）\n`;
+    const title = userTitles[id] || "称号なし";
+
+text += `${i + 1}位：【${title}】${name}（${coins}コイン）\n`;
   }
 
   const myRank = ranking.findIndex(u => u[0] === userId);
@@ -336,12 +395,17 @@ async function loadCoins() {
   const snapshot = await db.collection("coins").get();
 
   snapshot.forEach(doc => {
-    userCoins[doc.id] = doc.data().coins;
+    const data = doc.data();
+
+    userCoins[doc.id] = data.coins || 1000;
+    userTitles[doc.id] = data.title || "称号なし";
+    userOwnedTitles[doc.id] =
+
+  data.ownedTitles || ["初心者"];
   });
 
-  console.log("コインデータ読み込み完了");
+  console.log("データ読み込み完了");
 }
-
 async function saveCoins() {
   const batch = db.batch();
 
@@ -349,7 +413,11 @@ async function saveCoins() {
     const ref = db.collection("coins").doc(userId);
 
     batch.set(ref, {
-      coins: userCoins[userId]
+      coins: userCoins[userId],
+      title: userTitles[userId] || "称号なし"
+      ownedTitles: userOwnedTitles[userId] || []
+
+});
     });
   }
 
@@ -363,6 +431,17 @@ app.post('/webhook', async (req, res) => {
 const userId = event.source.userId;
 if (userCoins[userId] === undefined) {
   userCoins[userId] = 1000;
+  if (!userTitles[userId]) {
+
+  userTitles[userId] = "初心者";
+
+}
+
+if (!userOwnedTitles[userId]) {
+
+  userOwnedTitles[userId] = ["初心者"];
+
+}
   await saveCoins();
 }
 
@@ -1264,6 +1343,66 @@ else if (userText === "/daily") {
       headers: {
         "Authorization":
           `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (userText === "/gacha") {
+
+  const cost = 300;
+
+  if (userCoins[userId] < cost) {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [createQuickReplyMessage("コイン足りない😢")]
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+    return;
+  }
+
+  userCoins[userId] -= cost;
+
+  const result = pullTitleGacha();
+
+  if (!userOwnedTitles[userId]) {
+  userOwnedTitles[userId] = [];
+}
+
+if (!userOwnedTitles[userId].includes(result.name)) {
+  userOwnedTitles[userId].push(result.name);
+}
+
+userTitles[userId] = result.name;
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [
+        createQuickReplyMessage(
+`🎉 称号獲得！
+
+【${result.rarity}】
+👑 ${result.name}
+
+🪙 残り：${userCoins[userId]}`
+        )
+      ]
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
   );
