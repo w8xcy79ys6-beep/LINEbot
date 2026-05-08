@@ -77,6 +77,21 @@ function pullTitleGacha() {
   return titles[0];
 }
 const userLastAd = {};
+// カードを引く
+function drawCard() {
+  return Math.floor(Math.random() * 10) + 1;
+}
+
+// 合計
+function getTotal(cards) {
+  return cards.reduce((a, b) => a + b, 0);
+}
+
+// 倍率計算（機械割100%）
+function getMultiplier(winRate) {
+  return Math.floor((1 / winRate) * 100) / 100;
+}
+
 // HIGH&LOW用データ
 const highLowData = {};
 const userBetCoins = {};
@@ -1529,20 +1544,6 @@ ${owned.map(t => "・" + t).join("\n")}`
 }
 
 
-// カードを引く
-function drawCard() {
-  return Math.floor(Math.random() * 10) + 1;
-}
-
-// 合計
-function getTotal(cards) {
-  return cards.reduce((a, b) => a + b, 0);
-}
-
-// 倍率計算（機械割100%）
-function getMultiplier(winRate) {
-  return Math.floor((1 / winRate) * 100) / 100;
-}
 
 // 賭け額変更
 else if (userText.startsWith("/bet")) {
