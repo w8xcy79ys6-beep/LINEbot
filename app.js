@@ -1210,4 +1210,8 @@ else if (is575(userText)) {
   res.sendStatus(200);
 });
 
-app.listen(process.env.PORT || 3000);
+loadCoins().then(() => {
+  app.listen(process.env.PORT || 3000, () => {
+    console.log("起動！");
+  });
+});
