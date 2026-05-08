@@ -432,12 +432,42 @@ if (userText.trim() === "/help") {
       replyToken,
       messages: [createQuickReplyMessage(`使い方ガイド😎
 /help 使い方ガイド表示
+
 【カジノ系ゲーム】🎮
-/slot スロット開始
+🎰 SLOT
+
+/slot 1回スロット
+/slot10 10連スロット
+/slot100 100連スロット
+/rate 確率・配当確認
+
+🎉 絵柄が揃うとコイン獲得！
+
+7️⃣ → 超高配当🎉🎉🎉
+⭐ → 高配当🎉
+
 /rate スロット詳細確率表示
+
 /daily デイリーボーナス獲得
+
 /coin 持ちメダル表示
+
 /rank ランキング表示
+
+🎴 HIGH&LOW
+
+/highlow ゲーム開始
+/high HIGHを選択
+/low LOWを選択
+/bet 数字 賭け額変更
+
+例：
+/bet 500
+
+現在の数字より
+高いか低いかを当てろ！
+
+数字によって倍率変動🔥
 【👑 称号システム】
 /gacha
 称号ガチャ（300コイン）
@@ -447,13 +477,20 @@ if (userText.trim() === "/help") {
 
 /equip 称号名
 称号を変更
+
 【ニュース系✉️】
 /weather 地名　大阪、熊本、東京に対応
+
 /news 日本、世界のニュース表示
+
 【便利系🍱】
+
 /cal 1+4 電卓
+
 /rand A B AからBまでの乱数表示
+
 /en 英単語　英語→日本語翻訳
+
 /shiritori しりとり`)]
     },
     {
