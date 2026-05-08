@@ -344,10 +344,11 @@ app.post('/webhook', async (req, res) => {
 }
   const event = req.body.events[0];
 const userId = event.source.userId;
-
-if (!userCoins[userId]) {
+if (userCoins[userId] === undefined) {
   userCoins[userId] = 1000;
+  await saveCoins();
 }
+
   if (event.type === 'message') {
     const replyToken = event.replyToken;
     const userText = event.message.text;
