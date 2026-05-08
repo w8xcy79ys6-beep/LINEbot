@@ -1,4 +1,4 @@
-let lastWord = "";
+かlet lastWord = "";
 let isShiritori = false;
 let userCoins = {};
 const userNames = {};
@@ -176,6 +176,21 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+async function getUserData(userId) {
+  const doc = await db.collection("users").doc(userId).get();
+
+  if (!doc.exists) {
+    return {
+      lastDaily: 0
+    };
+  }
+
+  return doc.data();
+}
+
+async function saveUserData(userId, data) {
+  await db.collection("users").doc(userId).set(data, { merge: true });
+}
 function createQuickReplyMessage(text) {
   return {
     type: "text",
@@ -366,6 +381,7 @@ if (userText.trim() === "/help") {
 /news 日本、世界のニュース表示
 /shiritori しりとりスタート
 /slot スロット開始
+/daily デイリーボーナス獲得
 /rate スロット詳細確率表示
 /coin 持ちメダル表示
 /rank ランキング表示
@@ -1187,6 +1203,67 @@ else if (userText === "/coin") {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+else if (userText === "/daily") {
+
+  const userData = await getUserData(userId);
+
+  const now = Date.now();
+
+  if (
+    userData.lastDaily &&
+    now - userData.lastDaily < 86400000
+  ) {
+
+    const remain =
+      86400000 - (now - userData.lastDaily);
+
+    const hour = Math.floor(remain / 3600000);
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: `⏳ あと${hour}時間待って！`
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userCoins[userId] += 1000;
+
+  await saveCoins();
+
+  await saveUserData(userId, {
+    lastDaily: now
+  });
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text: "🎁 デイリーボーナス！\n💰 +1000コイン"
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
   );
