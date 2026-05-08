@@ -1632,8 +1632,8 @@ else if (userText === "/highlow") {
   const highWins = 13 - current;
   const lowWins = current - 1;
 
-  const highRate = highWins / 12;
-  const lowRate = lowWins / 12;
+  const highRate = highWins / 13;
+  const lowRate = lowWins / 13;
 
   const highMulti =
     highRate > 0
@@ -1739,8 +1739,8 @@ else if (
   const highWins = 13 - current;
   const lowWins = current - 1;
 
-  const highRate = highWins / 12;
-  const lowRate = lowWins / 12;
+  const highRate = highWins / 13;
+  const lowRate = lowWins / 13;
 
   const highMulti =
     highRate > 0
