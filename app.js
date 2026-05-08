@@ -394,7 +394,7 @@ async function saveCoins() {
       ownedTitles: userOwnedTitles[userId] || []
 
 });
-    });
+    
   }
 
   await batch.commit();
@@ -1379,6 +1379,84 @@ userTitles[userId] = result.name;
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+  else if (userText === "/titles") {
+
+  const owned = userOwnedTitles[userId] || [];
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`👑 所持称号
+
+${owned.map(t => "・" + t).join("\n")}`
+      }]
+    },
+    {
+      headers: {
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+    else if (userText.startsWith("/equip")) {
+
+  const titleName =
+    userText.replace("/equip", "").trim();
+
+  if (
+    !userOwnedTitles[userId] ||
+    !userOwnedTitles[userId].includes(titleName)
+  ) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "その称号持ってない😢"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userTitles[userId] = titleName;
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`👑 称号変更！
+
+現在：
+【${titleName}】`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
     }
   );
