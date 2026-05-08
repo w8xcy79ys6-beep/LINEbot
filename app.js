@@ -1473,6 +1473,270 @@ ${owned.map(t => "・" + t).join("\n")}`
     }
   );
 }
+      // HIGH&LOW用データ
+const highLowData = {};
+const userBetCoins = {};
+
+// 倍率計算（機械割100%）
+function getMultiplier(winRate) {
+  return Math.floor((1 / winRate) * 100) / 100;
+}
+
+// 賭け額変更
+else if (userText.startsWith("/bet")) {
+
+  const amount = parseInt(
+    userText.replace("/bet", "").trim()
+  );
+
+  if (isNaN(amount) || amount <= 0) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "使い方：/bet 100"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userBetCoins[userId] = amount;
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`💰 賭け額変更！
+
+現在：${amount}コイン`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+
+// HIGH&LOW開始
+else if (userText === "/highlow") {
+
+  const cost =
+    userBetCoins[userId] || 100;
+
+  if (userCoins[userId] < cost) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "コイン足りない😢"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userCoins[userId] -= cost;
+
+  const current =
+    Math.floor(Math.random() * 13) + 1;
+
+  const highWins = 13 - current;
+  const lowWins = current - 1;
+
+  const highRate = highWins / 12;
+  const lowRate = lowWins / 12;
+
+  const highMulti =
+    highRate > 0
+      ? getMultiplier(highRate)
+      : 0;
+
+  const lowMulti =
+    lowRate > 0
+      ? getMultiplier(lowRate)
+      : 0;
+
+  highLowData[userId] = {
+    current,
+    cost
+  };
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🎴 HIGH&LOW
+
+現在の数字：${current}
+
+📈 HIGH → ${highMulti}倍
+📉 LOW → ${lowMulti}倍
+
+💰 賭け額：${cost}
+
+選んで！
+/high
+/low`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+
+// HIGH or LOW
+else if (
+  userText === "/high" ||
+  userText === "/low"
+) {
+
+  if (!highLowData[userId]) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+"/highlow を先にして！"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  const current =
+    highLowData[userId].current;
+
+  const cost =
+    highLowData[userId].cost;
+
+  const next =
+    Math.floor(Math.random() * 13) + 1;
+
+  let win = false;
+
+  if (
+    userText === "/high" &&
+    next > current
+  ) {
+    win = true;
+  }
+
+  if (
+    userText === "/low" &&
+    next < current
+  ) {
+    win = true;
+  }
+
+  const highWins = 13 - current;
+  const lowWins = current - 1;
+
+  const highRate = highWins / 12;
+  const lowRate = lowWins / 12;
+
+  const highMulti =
+    highRate > 0
+      ? getMultiplier(highRate)
+      : 0;
+
+  const lowMulti =
+    lowRate > 0
+      ? getMultiplier(lowRate)
+      : 0;
+
+  let reward = 0;
+
+  if (win) {
+
+    const multi =
+      userText === "/high"
+        ? highMulti
+        : lowMulti;
+
+    reward =
+      Math.floor(cost * multi);
+
+    userCoins[userId] += reward;
+  }
+
+  delete highLowData[userId];
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🎴 ${current} → ${next}
+
+${win ? "🎉 WIN!" : "😢 LOSE"}
+
+💰 ${
+  win
+    ? "+" + reward
+    : "-" + cost
+}
+
+🪙 残り：${userCoins[userId]}`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
