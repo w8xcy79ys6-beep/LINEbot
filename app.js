@@ -77,6 +77,12 @@ function pullTitleGacha() {
   return titles[0];
 }
 const userLastAd = {};
+// HIGH&LOW用データ
+const highLowData = {};
+const userBetCoins = {};
+
+// BLACKJACK用
+const blackjackData = {};
 async function getUserName(userId) {
   if (userNames[userId]) return userNames[userId];
 
