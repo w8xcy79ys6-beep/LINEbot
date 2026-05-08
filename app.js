@@ -7,7 +7,7 @@ const userNames = {};
 
 const titles = [
   { name: "見習い冒険者", rarity: "N", chance: 40 },
-  { name: "夜ふかし常習犯", rarity: "N", chance: 40 },
+  { name: "夜ふかし常習犯", rarity: "N", chance: 30 },
 
   { name: "深夜テンション", rarity: "R", chance: 10 },
   { name: "選ばれし者", rarity: "R", chance: 10 },
@@ -432,17 +432,29 @@ if (userText.trim() === "/help") {
       replyToken,
       messages: [createQuickReplyMessage(`使い方ガイド😎
 /help 使い方ガイド表示
-/weather 地名　大阪、熊本、東京に対応
-/news 日本、世界のニュース表示
-/shiritori しりとりスタート
+【カジノ系ゲーム】🎮
 /slot スロット開始
-/daily デイリーボーナス獲得
 /rate スロット詳細確率表示
+/daily デイリーボーナス獲得
 /coin 持ちメダル表示
 /rank ランキング表示
+【👑 称号システム】
+/gacha
+称号ガチャ（300コイン）
+
+/titles
+所持称号一覧
+
+/equip 称号名
+称号を変更
+【ニュース系✉️】
+/weather 地名　大阪、熊本、東京に対応
+/news 日本、世界のニュース表示
+【便利系🍱】
 /cal 1+4 電卓
 /rand A B AからBまでの乱数表示
-/en 英単語　英語→日本語翻訳`)]
+/en 英単語　英語→日本語翻訳
+/shiritori しりとり`)]
     },
     {
       headers: {
