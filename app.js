@@ -295,7 +295,9 @@ function createQuickReplyMessage(text) {
 }
 const app = express();
 app.use(express.json());
-
+app.get("/", (req, res) => {
+  res.send("BOT起動中！");
+});
 function toHiragana(text) {
   return text.replace(/[ァ-ン]/g, ch =>
     String.fromCharCode(ch.charCodeAt(0) - 0x60)
