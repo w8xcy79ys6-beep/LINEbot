@@ -6,43 +6,19 @@ let userOwnedTitles = {};
 const userNames = {};
 
 const titles = [
-  // ノーマル
-  { name: "見習い冒険者", rarity: "N" },
-  { name: "夜ふかし常習犯", rarity: "N" },
-  { name: "ラーメン研究家", rarity: "N" },
-  { name: "猫派", rarity: "N" },
-  { name: "布団の支配者", rarity: "N" },
-  { name: "ぎりぎり人間", rarity: "N" },
-  { name: "ミスの達人", rarity: "N" },
-  { name: "コンビニの民", rarity: "N" },
-  { name: "既読スルー職人", rarity: "N" },
+  { name: "見習い冒険者", rarity: "N", chance: 40 },
+  { name: "夜ふかし常習犯", rarity: "N", chance: 40 },
 
-  // レア
-  { name: "深夜テンション", rarity: "R" },
-  { name: "選ばれし者", rarity: "R" },
-  { name: "エナジードリンク中毒", rarity: "R" },
-  { name: "運だけで生きる者", rarity: "R" },
-  { name: "伝説の帰宅部", rarity: "R" },
-  { name: "裏ボス候補", rarity: "R" },
-  { name: "時をかける寝坊", rarity: "R" },
+  { name: "深夜テンション", rarity: "R", chance: 10 },
+  { name: "選ばれし者", rarity: "R", chance: 10 },
 
-  // スーパーレア
-  { name: "世界線の観測者", rarity: "SR" },
-  { name: "神引きの化身", rarity: "SR" },
-  { name: "深淵を覗く者", rarity: "SR" },
-  { name: "インターネット老人会", rarity: "SR" },
-  { name: "虚無マスター", rarity: "SR" },
+  { name: "世界線の観測者", rarity: "SR", chance: 4 },
+  { name: "神引きの化身", rarity: "SR", chance: 4 },
 
-  // 激レア
-  { name: "風吹けば名無しの王", rarity: "SSR" },
-  { name: "終焉を告げる者", rarity: "SSR" },
-  { name: "全てを知る名無し", rarity: "SSR" },
-  { name: "運営に愛された者", rarity: "SSR" },
+  { name: "終焉を告げる者", rarity: "SSR", chance: 1.5 },
+  { name: "運営に愛された者", rarity: "SSR", chance: 0.4 },
 
-  // 超激レア
-  { name: "ChatGPTに認識された存在", rarity: "UR" },
-  { name: "世界バグ保持者", rarity: "UR" },
-  { name: "宇宙の管理者", rarity: "UR" }
+  { name: "宇宙の管理者", rarity: "UR", chance: 0.1 }
 ];
 function spinSlot() {
   const items = ["🍒","🔔","7️⃣","🍉","⭐"];
@@ -414,7 +390,7 @@ async function saveCoins() {
 
     batch.set(ref, {
       coins: userCoins[userId],
-      title: userTitles[userId] || "称号なし"
+      title: userTitles[userId] || "称号なし",
       ownedTitles: userOwnedTitles[userId] || []
 
 });
