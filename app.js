@@ -434,7 +434,7 @@ if (userText.trim() === "/help") {
 /help 使い方ガイド表示
 
 【カジノ系ゲーム】🎮
-🎰 SLOT
+☀️🎰 SLOT
 
 /slot 1回スロット
 /slot10 10連スロット
@@ -443,18 +443,10 @@ if (userText.trim() === "/help") {
 
 🎉 絵柄が揃うとコイン獲得！
 
-7️⃣ → 超高配当🎉🎉🎉
-⭐ → 高配当🎉
+7️⃣揃い→ 超高配当🎉🎉🎉
+⭐揃い→ 高配当🎉
 
-/rate スロット詳細確率表示
-
-/daily デイリーボーナス獲得
-
-/coin 持ちメダル表示
-
-/rank ランキング表示
-
-🎴 HIGH&LOW
+☀️🎴 HIGH&LOW
 
 /highlow ゲーム開始
 /high HIGHを選択
@@ -468,6 +460,25 @@ if (userText.trim() === "/help") {
 高いか低いかを当てろ！
 
 数字によって倍率変動🔥
+
+☀️🃏 BLACKJACK
+
+/blackjack 開始
+/hit カードを引く
+/stand 勝負
+
+/bet 500
+で掛け金変更可能🔥
+
+21を超えると負け💥
+
+【その他カジノメニュー🎰】
+/daily デイリーボーナス獲得
+
+/coin 持ちメダル表示
+
+/rank ランキング表示
+
 【👑 称号システム】
 /gacha
 称号ガチャ（300コイン）
@@ -1513,6 +1524,18 @@ ${owned.map(t => "・" + t).join("\n")}`
       // HIGH&LOW用データ
 const highLowData = {};
 const userBetCoins = {};
+    // BLACKJACK用
+const blackjackData = {};
+
+// カードを引く
+function drawCard() {
+  return Math.floor(Math.random() * 10) + 1;
+}
+
+// 合計
+function getTotal(cards) {
+  return cards.reduce((a, b) => a + b, 0);
+}
 
 // 倍率計算（機械割100%）
 function getMultiplier(winRate) {
@@ -1761,6 +1784,290 @@ ${win ? "🎉 WIN!" : "😢 LOSE"}
   win
     ? "+" + reward
     : "-" + cost
+}
+
+🪙 残り：${userCoins[userId]}`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+  // BLACKJACK開始
+else if (userText === "/blackjack") {
+
+  // HIGH&LOWと同じ掛け金
+  const cost =
+    userBetCoins[userId] || 100;
+
+  if (userCoins[userId] < cost) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "コイン足りない😢"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userCoins[userId] -= cost;
+
+  // 初期カード
+  const player = [
+    drawCard(),
+    drawCard()
+  ];
+
+  const dealer = [
+    drawCard(),
+    drawCard()
+  ];
+
+  blackjackData[userId] = {
+    player,
+    dealer,
+    cost
+  };
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🃏 BLACKJACK
+
+あなた：
+${player.join(" , ")}
+合計：${getTotal(player)}
+
+ディーラー：
+${dealer[0]} , ?
+
+💰 掛け金：${cost}
+
+コマンド：
+/hit
+/stand`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+
+// HIT
+else if (userText === "/hit") {
+
+  if (!blackjackData[userId]) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+"/blackjack を先にして！"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  const data = blackjackData[userId];
+
+  data.player.push(drawCard());
+
+  const total =
+    getTotal(data.player);
+
+  // バースト
+  if (total > 21) {
+
+    delete blackjackData[userId];
+
+    await saveCoins();
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+`💥 BUST!
+
+${data.player.join(" , ")}
+合計：${total}
+
+😢 負け
+
+🪙 残り：${userCoins[userId]}`
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🃏 HIT!
+
+${data.player.join(" , ")}
+合計：${total}
+
+/hit
+/stand`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
+}
+
+// STAND
+else if (userText === "/stand") {
+
+  if (!blackjackData[userId]) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+"/blackjack を先にして！"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  const data = blackjackData[userId];
+
+  // ディーラーは17以上まで引く
+  while (
+    getTotal(data.dealer) < 17
+  ) {
+    data.dealer.push(drawCard());
+  }
+
+  const playerTotal =
+    getTotal(data.player);
+
+  const dealerTotal =
+    getTotal(data.dealer);
+
+  let result = "😢 負け";
+  let reward = 0;
+
+  // 勝ち
+  if (
+    dealerTotal > 21 ||
+    playerTotal > dealerTotal
+  ) {
+
+    result = "🎉 勝ち！";
+
+    // 2倍返し
+    reward = data.cost * 2;
+  }
+
+  // 引き分け
+  else if (
+    playerTotal === dealerTotal
+  ) {
+
+    result = "🤝 引き分け";
+
+    // 掛け金返却
+    reward = data.cost;
+  }
+
+  userCoins[userId] += reward;
+
+  delete blackjackData[userId];
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🃏 BLACKJACK結果
+
+あなた：
+${data.player.join(" , ")}
+合計：${playerTotal}
+
+ディーラー：
+${data.dealer.join(" , ")}
+合計：${dealerTotal}
+
+${result}
+
+💰 ${
+  reward > 0
+    ? "+" + reward
+    : "-" + data.cost
 }
 
 🪙 残り：${userCoins[userId]}`
