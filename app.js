@@ -1,6 +1,6 @@
 let lastWord = "";
 let isShiritori = false;
-const userCoins = {};
+let userCoins = {};
 const userNames = {};
 function spinSlot() {
   const items = ["🍒","🔔","7️⃣","🍉","⭐"];
@@ -156,6 +156,26 @@ const words = [
 "れんちゃん","れあやく",];
 const express = require('express');
 const axios = require('axios');
+const admin = require("firebase-admin");
+
+const firebaseConfig = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL
+};
+
+admin.initializeApp({
+  credential: admin.credential.cert(firebaseConfig)
+});
+
+const db = admin.firestore();
 function createQuickReplyMessage(text) {
   return {
     type: "text",
@@ -295,7 +315,29 @@ function is575(text) {
 }
 
 const CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
+async function loadCoins() {
+  const snapshot = await db.collection("coins").get();
 
+  snapshot.forEach(doc => {
+    userCoins[doc.id] = doc.data().coins;
+  });
+
+  console.log("コインデータ読み込み完了");
+}
+
+async function saveCoins() {
+  const batch = db.batch();
+
+  for (const userId in userCoins) {
+    const ref = db.collection("coins").doc(userId);
+
+    batch.set(ref, {
+      coins: userCoins[userId]
+    });
+  }
+
+  await batch.commit();
+}
 app.post('/webhook', async (req, res) => {
   if (!req.body.events || req.body.events.length === 0) {
   return res.sendStatus(200);
@@ -304,7 +346,7 @@ app.post('/webhook', async (req, res) => {
 const userId = event.source.userId;
 
 if (!userCoins[userId]) {
-  userCoins[userId] = 10000;
+  userCoins[userId] = 1000;
 }
   if (event.type === 'message') {
     const replyToken = event.replyToken;
@@ -942,7 +984,7 @@ if (userCoins[userId] >= 50) {
   userLastAd[userId] = now;
 
   userCoins[userId] += 500;
-
+await saveCoins();
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
@@ -977,7 +1019,7 @@ else if (userText === "/slot") {
   const { text, reward } = spinSlot();
 
   userCoins[userId] += reward;
-
+await saveCoins();
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
@@ -1019,7 +1061,7 @@ else if (userText === "/slot10") {
   }
 
   userCoins[userId] += total;
-
+await saveCoins();
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
@@ -1115,7 +1157,7 @@ else if (userText === "/slot100") {
   }
 
   userCoins[userId] += total;
-
+await saveCoins();
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
     {
