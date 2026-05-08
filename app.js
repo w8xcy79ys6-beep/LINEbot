@@ -253,114 +253,71 @@ function createQuickReplyMessage(text) {
     text: text,
     quickReply: {
       items: [
-        {
-          type: "action",
-          action: {
-            type: "message",
-            label: "📖 ヘルプ",
-            text: "/help"
-          }
-        },
-        {
-          type: "action",
-          action: {
-            type: "message",
-            label: "📰 ニュース",
-            text: "/news"
-          }
-        },
-        
-        {
-
-          type: "action",
-
-          action: {
-
-            type: "message",
-
-            label: "📍大阪",
-
-            text: "/weather 大阪"
-
-          }
-
-        },
-
-        {
-
-          type: "action",
-
-          action: {
-
-            type: "message",
-
-            label: "📍東京",
-
-            text: "/weather 東京"
-
-          }
-
-        },
-
-        
-        {
-
-          type: "action",
-
-          action: {
-
-            type: "message",
-
-            label: "📍熊本",
-
-            text: "/weather 熊本"
-
-          }
-
-        },
-        
   {
-  type: "action",
-  action: {
-    type: "message",
-    label: "🎰 1回",
-    text: "/slot"
+    type: "action",
+    action: {
+      type: "message",
+      label: "🎰 SLOT",
+      text: "/slot"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "🃏 BJ",
+      text: "/blackjack"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "🎴 H&L",
+      text: "/highlow"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "💰 DAILY",
+      text: "/daily"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "🪙 COIN",
+      text: "/coin"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "👑 GACHA",
+      text: "/gacha"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "🏆 RANK",
+      text: "/rank"
+    }
+  },
+  {
+    type: "action",
+    action: {
+      type: "message",
+      label: "📖 HELP",
+      text: "/help"
+    }
   }
-},
-{
-  type: "action",
-  action: {
-    type: "message",
-    label: "🎰 10連",
-    text: "/slot10"
-  }
-},
-{
-  type: "action",
-  action: {
-    type: "message",
-    label: "🔥 100連",
-    text: "/slot100"
-  }
-},
-        {
-  type: "action",
-  action: {
-    type: "message",
-    label: "🎮 しりとり",
-    text: "/shiritori"
-  }
-},
-{
-  type: "action",
-  action: {
-    type: "message",
-    label: "🧮 計算",
-    text: "/cal 1+2"
-  }
-},
- 
-      ]
+]
     }
   };
 }
