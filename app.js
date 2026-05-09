@@ -508,6 +508,24 @@ if (userText.trim() === "/help") {
       }
     }
   );
+}else if (userText === "/myid") {
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text: `あなたのID\n${userId}`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
 }
  else if (userText.trim() === "/news") {
 
