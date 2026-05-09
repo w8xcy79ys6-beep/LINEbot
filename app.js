@@ -2115,36 +2115,36 @@ ${result}
   if (!userOwnedTitles[userId]) {
     userOwnedTitles[userId] = [];
   }
+// 未所持なら追加
+if (!userOwnedTitles[userId].includes(newTitle)) {
 
-  // 未所持なら追加
-  if (!userOwnedTitles[userId].includes(newTitle)) {
+  userOwnedTitles[userId].push(newTitle);
 
-    userOwnedTitles[userId].push(newTitle);
+  await saveCoins();
 
-    await saveUser(userId);
-
-    await axios.post(
-      "https://api.line.me/v2/bot/message/reply",
-      {
-        replyToken,
-        messages: [{
-          type: "text",
-          text:
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
 `🎉 資産称号獲得！
 
 👑 ${newTitle}
 
 現在：${coins.toLocaleString()}コイン`
-        }]
-      },
-      {
-        headers: {
-          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
-        }
+      }]
+    },
+    {
+      headers: {
+        "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
       }
-    );
+    }
+  );
 
-  } else {
+}
+ else {
 
     await axios.post(
       "https://api.line.me/v2/bot/message/reply",
