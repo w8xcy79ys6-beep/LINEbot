@@ -2057,6 +2057,116 @@ ${result}
     }
   );
 }
+  else if (userText === "/wealth") {
+
+  const coins = userCoins[userId];
+  let newTitle = null;
+
+  if (coins >= 100000000) {
+    newTitle = "💎 億万長者";
+  }
+  else if (coins >= 50000000) {
+    newTitle = "👑 世界級ギャンブラー";
+  }
+  else if (coins >= 10000000) {
+    newTitle = "🔥 伝説の勝負師";
+  }
+  else if (coins >= 5000000) {
+    newTitle = "⚡ カジノ王";
+  }
+  else if (coins >= 1000000) {
+    newTitle = "🏆 ミリオネア";
+  }
+  else if (coins >= 500000) {
+    newTitle = "💰 大金持ち";
+  }
+  else if (coins >= 100000) {
+    newTitle = "💵 成金";
+  }
+  else if (coins >= 50000) {
+    newTitle = "🎰 常連客";
+  }
+  else if (coins >= 10000) {
+    newTitle = "🪙 コイン収集家";
+  }
+  else if (coins >= 5000) {
+    newTitle = "🙂 初級ギャンブラー";
+  }
+  else {
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "まだ獲得できる称号がない😢"
+        }]
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  if (!userOwnedTitles[userId]) {
+    userOwnedTitles[userId] = [];
+  }
+
+  // 未所持なら追加
+  if (!userOwnedTitles[userId].includes(newTitle)) {
+
+    userOwnedTitles[userId].push(newTitle);
+
+    await saveUser(userId);
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+`🎉 資産称号獲得！
+
+👑 ${newTitle}
+
+現在：${coins.toLocaleString()}コイン`
+        }]
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+  } else {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text:
+`👑 すでに所持済み！
+
+${newTitle}`
+        }]
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+  }
+}
 else if (is575(userText)) {
   await axios.post(
     "https://api.line.me/v2/bot/message/reply",
