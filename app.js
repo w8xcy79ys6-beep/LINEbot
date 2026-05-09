@@ -261,6 +261,22 @@ function createQuickReplyMessage(text) {
       text: "/slot"
     }
   },
+    {
+  type: "action",
+  action: {
+    type: "message",
+    label: "🎰 x10",
+    text: "/slot10"
+  }
+},
+{
+  type: "action",
+  action: {
+    type: "message",
+    label: "💥 x100",
+    text: "/slot100"
+  }
+},    
   {
     type: "action",
     action: {
