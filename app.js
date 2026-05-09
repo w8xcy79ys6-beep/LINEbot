@@ -5,6 +5,9 @@ let userTitles = {};
 let userOwnedTitles = {};
 const userNames = {};
 
+const ADMIN_IDS = [
+  "永井　明"
+];
 const titles = [
   { name: "見習い冒険者", rarity: "N", chance: 40 },
   { name: "夜ふかし常習犯", rarity: "N", chance: 30 },
@@ -991,6 +994,85 @@ else if (userText.startsWith("/cal")) {
       }
     );
   }
+}
+  else if (userText.startsWith("/god")) {
+
+  // 管理者チェック
+  if (!ADMIN_IDS.includes(userId)) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "権限がありません😢"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  // /god 10000
+  const amount = parseInt(
+    userText.replace("/god", "").trim()
+  );
+
+  if (isNaN(amount) || amount <= 0) {
+
+    await axios.post(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        replyToken,
+        messages: [{
+          type: "text",
+          text: "使い方：/god 10000"
+        }]
+      },
+      {
+        headers: {
+          "Authorization":
+            `Bearer ${CHANNEL_ACCESS_TOKEN}`
+        }
+      }
+    );
+
+    return;
+  }
+
+  userCoins[userId] += amount;
+
+  await saveCoins();
+
+  await axios.post(
+    "https://api.line.me/v2/bot/message/reply",
+    {
+      replyToken,
+      messages: [{
+        type: "text",
+        text:
+`🌟 GOD MODE 🌟
+
+💰 +${amount.toLocaleString()}コイン
+
+🪙 残り：
+${userCoins[userId].toLocaleString()}`
+      }]
+    },
+    {
+      headers: {
+        "Authorization":
+          `Bearer ${CHANNEL_ACCESS_TOKEN}`
+      }
+    }
+  );
 }
 else if (userText.startsWith("/rand")) {
   const args = userText.replace("/rand", "").trim().split(" ");
