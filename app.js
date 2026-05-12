@@ -6,7 +6,7 @@ let userOwnedTitles = {};
 const userNames = {};
 
 const ADMIN_IDS = [
-  "Ue7d9cad9eca94d92d52195c4ecf740d8","Uf0cdb8a90a7197ee95813e69e654f816"
+  "Ue7d9cad9eca94d92d52195c4ecf740d8","Uf0cdb8a90a7197ee95813e69e654f816","Ub6199ad4e10018df406dd4793d720e8b"
 ];
 const titles = [
   { name: "見習い冒険者", rarity: "N", chance: 40 },
