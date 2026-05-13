@@ -1708,7 +1708,10 @@ else if (userText === "/highlow") {
 
   const highRate = highWins / 13;
   const lowRate = lowWins / 13;
+const drawRate = 1 / 13;
 
+const drawMulti =
+  Math.floor((1 / drawRate) * 100) / 100;
   const highMulti =
     highRate > 0
       ? getMultiplier(highRate)
@@ -1739,11 +1742,13 @@ else if (userText === "/highlow") {
 
 📈 HIGH → ${highMulti}倍
 📉 LOW → ${lowMulti}倍
+🎯 DRAW → ${drawMulti}倍
 
 💰 賭け額：${cost}
 
 選んで！
 /high
+/draw
 /low`
       }]
     },
@@ -1759,7 +1764,8 @@ else if (userText === "/highlow") {
 // HIGH or LOW
 else if (
   userText === "/high" ||
-  userText === "/low"
+  userText === "/low" ||
+  userText === "/draw"
 ) {
 
   if (!highLowData[userId]) {
@@ -1770,8 +1776,7 @@ else if (
         replyToken,
         messages: [{
           type: "text",
-          text:
-"/highlow を先にして！"
+          text: "/highlow を先にして！"
         }]
       },
       {
@@ -1796,6 +1801,7 @@ else if (
 
   let win = false;
 
+  // 勝敗判定
   if (
     userText === "/high" &&
     next > current
@@ -1810,30 +1816,52 @@ else if (
     win = true;
   }
 
+  if (
+    userText === "/draw" &&
+    next === current
+  ) {
+    win = true;
+  }
+
+  // 確率
   const highWins = 13 - current;
   const lowWins = current - 1;
+  const drawWins = 1;
 
   const highRate = highWins / 13;
   const lowRate = lowWins / 13;
+  const drawRate = drawWins / 13;
 
+  // 期待値100%
   const highMulti =
     highRate > 0
-      ? getMultiplier(highRate)
+      ? Math.floor((1 / highRate) * 100) / 100
       : 0;
 
   const lowMulti =
     lowRate > 0
-      ? getMultiplier(lowRate)
+      ? Math.floor((1 / lowRate) * 100) / 100
       : 0;
 
+  const drawMulti =
+    Math.floor((1 / drawRate) * 100) / 100;
+
   let reward = 0;
+  let multi = 0;
+
+  if (userText === "/high") {
+    multi = highMulti;
+  }
+
+  if (userText === "/low") {
+    multi = lowMulti;
+  }
+
+  if (userText === "/draw") {
+    multi = drawMulti;
+  }
 
   if (win) {
-
-    const multi =
-      userText === "/high"
-        ? highMulti
-        : lowMulti;
 
     reward =
       Math.floor(cost * multi);
